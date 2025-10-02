@@ -1,11 +1,32 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "module": "commonjs",
-    "rootDir": "src",
-    "outDir": "dist",
-    "strict": true,
-    "esModuleInterop": true,   // ✅ adicione ou troque para true
-    "skipLibCheck": true
-  }
+    /* Linguagem e compatibilidade */
+    "target": "ES2020",                  /* Nível de JavaScript emitido */
+    "module": "CommonJS",                /* Usar CommonJS para rodar no Node */
+    "lib": ["ES2020"],                   /* Bibliotecas padrão */
+    
+    /* Estrutura do projeto */
+    "rootDir": "src",                    /* Código-fonte dentro de src/ */
+    "outDir": "dist",                    /* Compilados vão para dist/ */
+    
+    /* Qualidade e segurança */
+    "strict": true,                      /* Ativar todos os checks de segurança */
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,                /* Pular checagem de tipos em node_modules */
+    
+    /* Importações mais modernas */
+    "esModuleInterop": true,             /* Permite importar libs CJS (express, dotenv) */
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,           /* Permite importar arquivos .json */
+    
+    /* Node */
+    "moduleResolution": "node",
+    "types": ["node"],                   /* Tipos globais do Node */
+    
+    /* Debug */
+    "sourceMap": true,                   /* Facilita debug no VSCode */
+    "noEmitOnError": true                /* Não compila se houver erro */
+  },
+  "include": ["src"],                    /* Inclui apenas src/ */
+  "exclude": ["node_modules", "dist"]    /* Ignora dependências e build */
 }
