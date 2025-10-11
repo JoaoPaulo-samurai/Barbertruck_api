@@ -1,25 +1,29 @@
 import express from "express";
-import dotenv from "dotenv";
 import cors from "cors";
-import cookieParser from "cookie-parser";
-import authRoutes from "./modules/auth/auth.routes"; // depois criamos
-
-dotenv.config();
+import barbersRouter from "./routes/barbers";
+import servicesRouter from "./routes/services";
+import reservationsRouter from "./routes/reservations";
 
 const app = express();
 
-app.use(express.json());
-app.use(cookieParser());
-
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173"; // ajuste se usar 3000
-
+// Configuração CORS para desenvolvimento
 app.use(cors({
-  origin: FRONTEND_URL,
-  credentials: true, // necessário se usar cookies httpOnly
+  origin: ["http://localhost:8080", "http://localhost:5173"], // coloque aqui todas as origens do frontend que estiver usando
+  credentials: true
 }));
 
-app.use("/api/auth", authRoutes);
+// Parse JSON
+app.use(express.json());
 
-app.get("/api/health", (_, res) => res.json({ ok: true }));
+// Rotas
+app.use("/api/barbers", barbersRouter);
+app.use("/api/services", servicesRouter);
+app.use("/api/reservations", reservationsRouter);
+
+// Error handler simples
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error("Unhandled error:", err);
+  res.status(500).json({ error: "Internal server error" });
+});
 
 export default app;
