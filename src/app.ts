@@ -1,24 +1,31 @@
 import express from "express";
 import cors from "cors";
-import barbersRouter from "./routes/barbers";
-import servicesRouter from "./routes/services";
 import reservationsRouter from "./routes/reservations";
+import barbersRoute from "./routes/barbers";
+import servicesRoute from "./routes/services";
+import timeslotsRoute from "./routes/timeslots";
+
+
 
 const app = express();
 
 // Configuração CORS para desenvolvimento
 app.use(cors({
-  origin: ["http://localhost:8080", "http://localhost:5173"], // coloque aqui todas as origens do frontend que estiver usando
+  origin: [
+    "http://localhost:8080",
+    "http://localhost:5173",
+    "http://172.16.2.138:8080" // 🔥 adiciona seu IP local
+  ],
   credentials: true
 }));
 
+
 // Parse JSON
 app.use(express.json());
-
-// Rotas
-app.use("/api/barbers", barbersRouter);
-app.use("/api/services", servicesRouter);
 app.use("/api/reservations", reservationsRouter);
+app.use("/api/barbers", barbersRoute);
+app.use("/api/services", servicesRoute);
+app.use("/api/timeslots", timeslotsRoute);
 
 // Error handler simples
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

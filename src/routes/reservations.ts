@@ -32,33 +32,34 @@ router.post("/", async (req, res) => {
         });
         console.log("Cliente upsertado:", client);
 
-        const serviceIds: number[] = (services || []).map((s: any) => Number(s)).filter(Boolean);
+const serviceIds: number[] = (services || []).map((s: any) => Number(s)).filter(Boolean);
 
-        // validação extra: serviços existem mesmo?
-        const serviceRecords = serviceIds.length
-            ? await prisma.service.findMany({ where: { id: { in: serviceIds } } })
-            : [];
-        console.log("Serviços encontrados:", serviceRecords);
+// validação: serviços existem mesmo?
+const serviceRecords = serviceIds.length
+    ? await prisma.service.findMany({ where: { id: { in: serviceIds } } })
+    : [];
 
-        const totalPrice = serviceRecords.reduce((sum: number, s: { price: string }) => sum + Number(s.price), 0);
+// calcula preço total
+const totalPrice = serviceRecords.reduce((sum: number, s: typeof serviceRecords[0]) => sum + s.price, 0);
 
-        const reservation = await prisma.reservation.create({
-            data: {
-                clientId: client.id,
-                barberId: barberId ? Number(barberId) : null,
-                date: new Date(date),
-                time,
-                totalPrice,
-                services: {
-                    create: serviceIds.map((serviceId) => ({ serviceId })),
-                },
-            },
-            include: {
-                client: true,
-                barber: true,
-                services: { include: { service: true } },
-            },
-        });
+const reservation = await prisma.reservation.create({
+    data: {
+        clientId: client.id,
+        barberId: barberId ? Number(barberId) : null,
+        date: new Date(date),
+        time,
+        totalPrice,
+        services: {
+            create: serviceIds.map((serviceId) => ({ serviceId })),
+        },
+    },
+    include: {
+        client: true,
+        barber: true,
+        services: { include: { service: true } },
+    },
+});
+
 
         console.log("Reserva criada:", reservation);
         res.status(201).json(reservation);
