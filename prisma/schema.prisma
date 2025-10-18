@@ -4,25 +4,29 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL") // agora apontando p/ postgres?schema=public
 }
 
 model Barber {
   id           Int           @id @default(autoincrement())
   name         String
   specialty    String?
-  imageUrl     String?
-  rating       Float?        @default(0)
+  imageUrl     String?       @map("image_url")
+  rating       Decimal?      @db.Decimal(2, 1) @default(0)
   reservations Reservation[]
+
+  @@map("Barber")
 }
 
 model Service {
   id                  Int                  @id @default(autoincrement())
   name                String
-  durationMinutes     Int
-  price               Float
-  category            String
+  durationMinutes     Int                  @map("duration_minutes")
+  price               Decimal              @db.Decimal(10, 2)
+  category            String?
   reservationServices ReservationService[]
+
+  @@map("services")
 }
 
 model Client {
@@ -32,26 +36,33 @@ model Client {
   email        String
   cpf          String        @unique
   reservations Reservation[]
+
+  @@map("clients")
 }
 
 model Reservation {
   id         Int                  @id @default(autoincrement())
-  clientId   Int
-  barberId   Int?
+  clientId   Int                  @map("client_id")
+  barberId   Int?                 @map("barber_id")
   date       DateTime
   time       String
-  totalPrice Float
-  createdAt  DateTime             @default(now())
+  totalPrice Decimal              @db.Decimal(10, 2) @map("total_price")
+  createdAt  DateTime             @default(now()) @map("created_at")
+
   barber     Barber?              @relation(fields: [barberId], references: [id])
   client     Client               @relation(fields: [clientId], references: [id])
   services   ReservationService[]
+
+  @@map("reservations")
 }
 
 model ReservationService {
-  reservationId Int
-  serviceId     Int
+  reservationId Int  @map("reservation_id")
+  serviceId     Int  @map("service_id")
+
   reservation   Reservation @relation(fields: [reservationId], references: [id])
   service       Service     @relation(fields: [serviceId], references: [id])
 
   @@id([reservationId, serviceId])
+  @@map("reservation_services")
 }
